@@ -1,0 +1,16 @@
+{
+  "name": "amz-monitor",
+  "version": "1.0.0",
+  "description": "Amazon monitor for used books",
+  "main": "monitor.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ivan Frade <ivan.frade@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "columnify": "^1.5.2",
+    "commander": "^2.9.0",
+    "superagent": "^1.5.0"
+  }
+}

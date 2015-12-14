@@ -1,0 +1,27 @@
+#!/usr/bin/sh
+echo "Called from" $PWD
+URL_TMPL="http://www.amazon.com/gp/offer-listing/%s/ref=olp_f_usedVeryGood?ie=UTF8&f_usedLikeNew=true&f_usedVeryGood=true";
+
+for asin in .amz/idx/* ; do
+    SIMPLE_ASIN=$(basename $asin)
+    echo "Fetching $SIMPLE_ASIN ("$(cat $asin)")"
+    ./lib/amzPage2json.js $SIMPLE_ASIN > x.html
+    cat x.html | ./lib/json2tab.js > x.tmp
+    md5=`md5sum x.tmp | awk '{ print $1 }'`
+
+    if [ ! -e .amz/refs/$SIMPLE_ASIN ]; then
+        previous_md5="/dev/null"
+    else
+        previous_md5=$(cat .amz/refs/$SIMPLE_ASIN)
+    fi
+    
+    if [ $md5 != $previous_md5 ]; then
+        echo "$SIMPLE_ASIN has changed"
+        echo "Parent: $previous_md5" > .amz/objects/$md5
+        echo "Date :" $(date) >> .amz/objects/$md5
+        cat x.tmp >> .amz/objects/$md5
+        echo $md5 > .amz/refs/$SIMPLE_ASIN
+    fi
+
+    rm -f x.html x.tmp
+done

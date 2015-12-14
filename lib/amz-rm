@@ -1,0 +1,13 @@
+#!/usr/bin/sh
+
+die () {
+    decho >&2 "Error: $@"
+    exit 1
+}
+
+[ $# -ne 1 ] && die "add [asin]"
+[ ! -e .amz/idx/$1 ] && die "Invalid asin"
+
+rm -f  .amz/idx/$1
+rm -rf .amz/objects/$1
+rm -rf .amz/refs/$1

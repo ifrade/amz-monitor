@@ -1,0 +1,21 @@
+#!/usr/bin/sh
+
+die () {
+    echo >&2 "Error: $@"
+    exit 1
+}
+
+[ $# -ne 1 ] && die "diff [asin]"
+
+echo "Results for:" $(cat .amz/idx/$1) " (asin: $1)"
+CURRENT_HEAD=$(cat .amz/refs/$1)
+
+PREVIOUS_HEAD=$(head -1 .amz/objects/$CURRENT_HEAD | awk '{print $2}')
+echo "$PREVIOUS_HEAD"
+if [ $PREVIOUS_HEAD = "/dev/null" ]; then
+    PREVIOUS_FILE=$PREVIOUS_HEAD
+else
+    PREVIOUS_FILE=.amz/objects/$PREVIOUS_HEAD
+fi
+
+diff -u $PREVIOUS_FILE .amz/objects/$CURRENT_HEAD | grep -v Parent | colordiff

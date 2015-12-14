@@ -1,0 +1,10 @@
+#!/usr/bin/sh
+
+LINE_TMPL="%-20s|%s \n"
+#printf  $FILETIME $FILE $TOPLINE
+
+printf "$LINE_TMPL" " asin" " description"
+printf "$LINE_TMPL" "--------------------" "----------------------------------------------"
+for asin in .amz/idx/* ; do
+    printf "$LINE_TMPL" $(basename $asin) "$(cat $asin)"
+done

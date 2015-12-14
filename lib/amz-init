@@ -1,0 +1,7 @@
+#!/usr/bin/sh
+
+mkdir -p .amz/objects
+mkdir -p .amz/refs
+mkdir -p .amz/idx
+
+echo "AMZ initialized"
