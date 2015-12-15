@@ -1,5 +1,4 @@
 #!/usr/bin/sh
-echo "Called from" $PWD
 URL_TMPL="http://www.amazon.com/gp/offer-listing/%s/ref=olp_f_usedVeryGood?ie=UTF8&f_usedLikeNew=true&f_usedVeryGood=true";
 
 for asin in .amz/idx/* ; do
