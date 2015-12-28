@@ -1,10 +1,11 @@
 #!/usr/bin/sh
-URL_TMPL="http://www.amazon.com/gp/offer-listing/%s/ref=olp_f_usedVeryGood?ie=UTF8&f_usedLikeNew=true&f_usedVeryGood=true";
 
 for asin in .amz/idx/* ; do
     SIMPLE_ASIN=$(basename $asin)
     echo "Fetching $SIMPLE_ASIN ("$(cat $asin)")"
     ./lib/amzPage2json.js $SIMPLE_ASIN > x.html
+    [ $? -ne 0 ] && echo "Something wrong processing the amazon page. Skipping." && continue
+
     cat x.html | ./lib/json2tab.js > x.tmp
     md5=`md5sum x.tmp | awk '{ print $1 }'`
 
@@ -13,7 +14,7 @@ for asin in .amz/idx/* ; do
     else
         previous_md5=$(cat .amz/refs/$SIMPLE_ASIN)
     fi
-    
+
     if [ $md5 != $previous_md5 ]; then
         echo "$SIMPLE_ASIN has changed"
         echo "Parent: $previous_md5" > .amz/objects/$md5
