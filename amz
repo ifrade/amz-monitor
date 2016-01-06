@@ -1,0 +1,38 @@
+#!/bin/bash
+
+usage() {
+    echo ""
+    echo "  Usage: $0 [options] [command]"
+    echo ""
+    echo ""
+    echo "  Commands:"
+    echo ""
+    echo "    init                instialize amz monitor in this directory"
+    echo "    fetch               bring latest data from amazon"
+    echo "    diff [asin]         check changes in that book"
+    echo "    ls                  list monitored titles"
+    echo "    add [asin] [title]  add a title to monitor"
+    echo "    rm [asin]           removes a title to monitor"
+    echo "    help [cmd]          display help for [cmd]"
+    echo ""
+    echo "  Options:"
+    echo ""
+    echo "    -h, --help     output usage information"
+    echo "    -V, --version  output the version number"
+    echo ""
+}
+
+if [ $# -lt 1 ]; then
+    usage
+    exit 1
+fi
+
+CMD=$1
+shift
+
+if [ ! -e ./lib/amz-$CMD ]; then
+    echo "  Unknown command $CMD (no lib/amz-$CMD script)"
+    usage
+else
+    ./lib/amz-$CMD "$@"
+fi
