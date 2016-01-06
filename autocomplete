@@ -1,0 +1,42 @@
+_amz_known_idxs ()
+{
+    known_idxs=$(ls .amz/idx)
+    COMPREPLY=( $(compgen -W "${known_idxs}" -- $cur))
+}
+
+_amz_top () {
+    COMPREPLY=( $( compgen -W 'init ls add rm diff fetch \
+                               help' -- $cur ) )
+}
+
+_amz_top_level ()
+{
+    #echo ""
+    #echo "_amz_top_level $@"
+    local cur prev command
+    # Pointer to current completion word.
+    # By convention, it's named "cur" but this isn't strictly necessary.
+
+    COMPREPLY=()   # Array variable storing the possible completions.
+    cur=${COMP_WORDS[COMP_CWORD]}
+    prev=${COMP_WORDS[COMP_CWORD-1]}
+
+    case "$prev" in
+        rm)
+            _amz_known_idxs
+            ;;
+        diff)
+            _amz_known_idxs
+            ;;
+        *)
+            _amz_top
+            
+    esac
+
+	#local completion_func="_amz_${command//-/_}"
+	#declare -f $completion_func >/dev/null && $completion_func && return
+
+    return 0
+}
+
+complete -F _amz_top_level -o default ./amz
