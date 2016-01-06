@@ -7,6 +7,8 @@ die () {
 
 [ $# -ne 1 ] && die "diff [asin]"
 
+[ ! -e .amz/idx/$1 ] && die "unknown asin ($1). List known asins with 'ls'."
+
 echo "Results for:" $(cat .amz/idx/$1) " (asin: $1)"
 CURRENT_HEAD=$(cat .amz/refs/$1)
 
