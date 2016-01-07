@@ -1,5 +1,7 @@
 #!/usr/bin/sh
 
+[ -d .amz ] && echo "amz already initialized in $PWD" && exit 1
+
 mkdir -p .amz/objects
 mkdir -p .amz/refs
 mkdir -p .amz/idx
