@@ -1,5 +1,7 @@
 #!/bin/bash
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 usage() {
     echo ""
     echo "  Usage: $0 [options] [command]"
@@ -30,9 +32,9 @@ fi
 CMD=$1
 shift
 
-if [ ! -e ./lib/amz-$CMD ]; then
+if [ ! -e $DIR/lib/amz-$CMD ]; then
     echo "  Unknown command $CMD (no lib/amz-$CMD script)"
     usage
 else
-    ./lib/amz-$CMD "$@"
+    $DIR/lib/amz-$CMD "$@"
 fi
