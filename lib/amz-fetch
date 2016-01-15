@@ -1,4 +1,18 @@
 #!/usr/bin/sh
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+VERBOSE=1
+while getopts ":s" opt; do
+  case $opt in
+      s)
+          VERBOSE=0
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      ;;
+  esac
+done
+
 
 for asin in .amz/idx/* ; do
     SIMPLE_ASIN=$(basename $asin)
@@ -16,11 +30,12 @@ for asin in .amz/idx/* ; do
     fi
 
     if [ $md5 != $previous_md5 ]; then
-        echo "$SIMPLE_ASIN has changed"
         echo "Parent: $previous_md5" > .amz/objects/$md5
         echo "Date :" $(date) >> .amz/objects/$md5
         cat x.tmp >> .amz/objects/$md5
         echo $md5 > .amz/refs/$SIMPLE_ASIN
+
+        [[ VERBOSE -eq 1 ]] && $DIR/amz-diff $SIMPLE_ASIN
     fi
 
     rm -f x.html x.tmp
