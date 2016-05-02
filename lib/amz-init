@@ -1,6 +1,22 @@
 #!/usr/bin/sh
 
+ALL_FINE=1
+inPath() {
+    # $1 command name
+    if ! [ -x "$(command -v $1)" ]; then
+        echo "$1 command is required to run this scripts"
+        ALL_FINE=0
+    fi
+}
+
+inPath jq
+inPath node
+inPath bar
+
+[ $ALL_FINE -eq 0 ] && exit 1
+
 [ -d .amz ] && echo "amz already initialized in $PWD" && exit 1
+
 
 mkdir -p .amz/objects
 echo '{ "entries": []}' > .amz/objects/0
