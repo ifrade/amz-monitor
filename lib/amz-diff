@@ -12,12 +12,7 @@ die () {
 echo "Results for:" $(cat .amz/idx/$1) " (asin: $1)"
 CURRENT_HEAD=$(cat .amz/refs/$1)
 
-PREVIOUS_HEAD=$(head -1 .amz/objects/$CURRENT_HEAD | awk '{print $2}')
-echo "$PREVIOUS_HEAD"
-if [ $PREVIOUS_HEAD = "/dev/null" ]; then
-    PREVIOUS_FILE=$PREVIOUS_HEAD
-else
-    PREVIOUS_FILE=.amz/objects/$PREVIOUS_HEAD
-fi
+PREVIOUS_HEAD=$(cat .amz/objects/$CURRENT_HEAD | jq '.parent' --raw-output)
+PREVIOUS_FILE=.amz/objects/$PREVIOUS_HEAD
 
-diff -u $PREVIOUS_FILE .amz/objects/$CURRENT_HEAD | grep -v Parent | colordiff
+node ./lib/jsondiff $PREVIOUS_FILE .amz/objects/$CURRENT_HEAD

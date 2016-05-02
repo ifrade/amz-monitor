@@ -4,13 +4,19 @@
   "description": "Amazon monitor for used books",
   "main": "monitor.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "author": "Ivan Frade <ivan.frade@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "cheerio": "^0.19.0",
+    "colors": "^1.1.2",
     "columnify": "^1.5.2",
+    "stampit": "^2.1.1",
     "superagent": "^1.5.0"
+  },
+  "devDependencies": {
+    "expect.js": "^0.3.1",
+    "mocha": "^2.4.5"
   }
 }

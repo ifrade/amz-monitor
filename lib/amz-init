@@ -3,7 +3,9 @@
 [ -d .amz ] && echo "amz already initialized in $PWD" && exit 1
 
 mkdir -p .amz/objects
+echo '{ "entries": []}' > .amz/objects/0
 mkdir -p .amz/refs
+echo "0" > .amz/refs/null
 mkdir -p .amz/idx
 
 echo "AMZ initialized"
