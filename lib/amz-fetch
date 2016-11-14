@@ -38,7 +38,8 @@ for asin in .amz/idx/* ; do
         #cat x.json >> .amz/objects/$md5
         echo $md5 > .amz/refs/$SIMPLE_ASIN
 
-        [[ VERBOSE -eq 1 ]] && $DIR/amz-diff $SIMPLE_ASIN
+        [[ $VERBOSE -eq 1 ]] && echo -n "Best price seen: " && $DIR/amz-best -s $SIMPLE_ASIN
+        [[ $VERBOSE -eq 1 ]] && $DIR/amz-diff $SIMPLE_ASIN
     fi
 
     rm -f x.html x.tmp
