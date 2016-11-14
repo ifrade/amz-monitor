@@ -13,6 +13,7 @@ usage() {
     echo "    fetch               bring latest data from amazon"
     echo "    diff [asin]         check changes in that book"
     echo "    best [asin]         prints the best price ever fetch"
+    echo "    history [asin]      prints the best prices fetch in chrono. order"
     echo "    ls                  list monitored titles"
     echo "    add [asin] [title]  add a title to monitor"
     echo "    rm [asin]           removes a title to monitor"

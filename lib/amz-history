@@ -1,0 +1,40 @@
+#!/usr/bin/sh
+
+die () {
+    echo >&2 "Error: $@"
+    exit 1
+}
+
+VERBOSE=1
+while getopts ":s" opt; do
+  case $opt in
+      s)
+          VERBOSE=0
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))
+
+[ $# -lt 1 ] && die "history [asin]"
+
+[ ! -e .amz/idx/$1 ] && die "unknown asin ($1). List known asins with 'ls'."
+
+[[ $VERBOSE -eq 1 ]] && echo "History of best fetched prices for" $(cat .amz/idx/$1) " (asin: $1)"
+
+CURRENT_HEAD=$(cat .amz/refs/$1)
+
+rm -f .tmp-best
+while [ $CURRENT_HEAD != "0" ]; do
+    [ ! -e .amz/objects/$CURRENT_HEAD ] && echo "Cannot find ref $CURRENT_HEAD (chain broken)." && exit 1
+    
+    FINAL_PRICE=$(cat .amz/objects/$CURRENT_HEAD  | jq -r '.entries[0]' | node ./lib/jsonFormPrice.js)
+    DATE=$(cat .amz/objects/$CURRENT_HEAD  | jq -r '.date')
+    echo "$FINAL_PRICE $DATE"
+    
+    PREVIOUS_HEAD=$(cat .amz/objects/$CURRENT_HEAD | jq '.parent' --raw-output)
+    CURRENT_HEAD=$PREVIOUS_HEAD
+done
