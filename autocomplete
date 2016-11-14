@@ -5,7 +5,7 @@ _amz_known_idxs ()
 }
 
 _amz_top () {
-    COMPREPLY=( $( compgen -W 'init ls add rm diff fetch \
+    COMPREPLY=( $( compgen -W 'init ls add rm diff fetch best \
                                help' -- $cur ) )
 }
 
@@ -26,6 +26,9 @@ _amz_top_level ()
             _amz_known_idxs
             ;;
         diff)
+            _amz_known_idxs
+            ;;
+        best)
             _amz_known_idxs
             ;;
         *)
