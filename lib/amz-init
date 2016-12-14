@@ -23,5 +23,5 @@ echo '{ "entries": []}' > .amz/objects/0
 mkdir -p .amz/refs
 echo "0" > .amz/refs/null
 mkdir -p .amz/idx
-
+mkdir -p .amz/best-price
 echo "AMZ initialized"

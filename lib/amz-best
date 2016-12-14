@@ -1,4 +1,5 @@
 #!/usr/bin/sh
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 die () {
     echo >&2 "Error: $@"
@@ -25,16 +26,8 @@ shift $((OPTIND-1))
 
 [[ $VERBOSE -eq 1 ]] && echo "Historical min for" $(cat .amz/idx/$1) " (asin: $1)"
 
-CURRENT_HEAD=$(cat .amz/refs/$1)
 
-rm -f .tmp-best
-while [ $CURRENT_HEAD != "0" ]; do
-    FINAL_PRICE=$(cat .amz/objects/$CURRENT_HEAD  | jq -r '.entries[0]' | node ./lib/jsonFormPrice.js)
-    DATE=$(cat .amz/objects/$CURRENT_HEAD  | jq -r '.date')
-    echo "$FINAL_PRICE $DATE" >> .tmp-best
-    
-    PREVIOUS_HEAD=$(cat .amz/objects/$CURRENT_HEAD | jq '.parent' --raw-output)
-    CURRENT_HEAD=$PREVIOUS_HEAD
-done
+[ -e .amz/best-price/$1 ] && cat .amz/best-price/$1 && exit 0
+[[ $VERBOSE -eq 1 ]] && echo "No cache, full calculation"
 
-cat .tmp-best | sort -k1n -k7nr -k3Mr -k4nr | head -1
+$DIR/amz-history -s $1 | sort -k1n -k7nr -k3Mr -k4nr | head -1 | tee .amz/best-price/$1
