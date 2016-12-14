@@ -27,7 +27,6 @@ shift $((OPTIND-1))
 
 CURRENT_HEAD=$(cat .amz/refs/$1)
 
-rm -f .tmp-best
 while [ $CURRENT_HEAD != "0" ]; do
     [ ! -e .amz/objects/$CURRENT_HEAD ] && echo "Cannot find ref $CURRENT_HEAD (chain broken)." && exit 1
     
