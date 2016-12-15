@@ -11,12 +11,25 @@ while getopts ":s" opt; do
       echo "Invalid option: -$OPTARG" >&2
       ;;
   esac
+  shift
 done
 
+ASINS=
+if [ $# -gt 0 ]; then
+    for asin in "$@" ; do
+        if [ -e .amz/idx/$asin ]; then
+            ASINS="$ASINS $asin";
+        else
+            echo "Skipping $asin (.amz/idx/$asin doesn't exist)"
+        fi
+    done
+else
+    ASINS=$(ls .amz/idx)
+fi
 
-for asin in .amz/idx/* ; do
-    SIMPLE_ASIN=$(basename $asin)
-    echo "Fetching $SIMPLE_ASIN ("$(cat $asin)")"
+for SIMPLE_ASIN in $ASINS ; do
+    
+    echo "Fetching $SIMPLE_ASIN ("$(cat .amz/idx/$SIMPLE_ASIN)")"
     ./lib/amzPage2json.js $SIMPLE_ASIN > x.json
     [ $? -ne 0 ] && echo "Something wrong processing the amazon page. Skipping." && continue
 

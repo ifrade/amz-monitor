@@ -34,6 +34,9 @@ _amz_top_level ()
         history)
             _amz_known_idxs
             ;;
+        fetch)
+            _amz_known_idxs
+            ;;
         *)
             _amz_top
             
