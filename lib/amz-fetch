@@ -43,16 +43,29 @@ for SIMPLE_ASIN in $ASINS ; do
     fi
 
     if [ $md5 != $previous_md5 ]; then
+        # Save previous best price
+        $DIR/amz-best -s $SIMPLE_ASIN > .tmp-fetch-best
+
+        # Create object, set parent to current HEAD
         cat x.json | jq --arg parent $previous_md5 --arg date "$(date)" \
                         '{ entries: . , parent: $parent, date: $date }' \
                         > .amz/objects/$md5
-        #echo "Parent: $previous_md5" > .amz/objects/$md5
-        #echo "Date :" $(date) >> .amz/objects/$md5
-        #cat x.json >> .amz/objects/$md5
+
+        # Update HEAD reference
         echo $md5 > .amz/refs/$SIMPLE_ASIN
 
-        [[ $VERBOSE -eq 1 ]] && echo -n "Best price seen: " && $DIR/amz-best -s $SIMPLE_ASIN
+        # add latest best price to previously saved best price
+        NEW_BEST_PRICE=$(cat .amz/objects/$md5  | jq -r '.entries[0]' | node ./lib/jsonFormPrice.js)
+        NEW_DATE=$(cat .amz/objects/$md5  | jq -r '.date')
+        echo "$NEW_BEST_PRICE $NEW_DATE" >> .tmp-fetch-best
+
+        # sort and take head to know the best and resave
+        UPDATED_BEST_PRICE=$(sort -k1n -k7nr -k3Mr -k4nr .tmp-fetch-best | head -1 | tee .amz/best-price/$SIMPLE_ASIN)
+
+        [[ $VERBOSE -eq 1 ]] && echo "Best price seen: $UPDATED_BEST_PRICE"
         [[ $VERBOSE -eq 1 ]] && $DIR/amz-diff $SIMPLE_ASIN
+
+        rm -f .tmp-fetch-best
     fi
 
     rm -f x.html x.tmp
