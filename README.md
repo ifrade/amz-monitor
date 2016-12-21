@@ -6,8 +6,8 @@ Add a book to the amazon monitor, fetch the price periodically and see how it ha
 All the information is stored locally and only updated when running fetch. No daemons, no cloud, no fancy.
 
 ## Requirements
-- [Node.js](https://nodejs.org/en/) 
-- [jq](https://stedolan.github.io/jq/) to manipulate JSON in the command line
+- [Node.js](https://nodejs.org/en/) is used for the http call and page scrapping 
+- [jq](https://stedolan.github.io/jq/) to manipulate JSON in the scripts
 
 ## Usage
 
@@ -15,7 +15,7 @@ All the information is stored locally and only updated when running fetch. No da
 - `./amz init` will create the required hidden folders to store the information
 
 ### Add/list/remove books to monitor
-- `./amz add [asin] "title"`: See below on how to figure out the "asin" of your book. The title doesn't need to match the amazon name (can be an alias or shortcut). e.g `./amz add 1451673310 "Fahrenheit 451 (recommended by Alan)"`.
+- `./amz add [asin] "title"`: See below on how to find out the "asin" of your book. The title doesn't need to match the amazon name (can be an alias or shortcut). e.g `./amz add 1451673310 "Fahrenheit 451 (recommended by Alan)"`.
 
 - `./amz ls`: list all books being monitored
 
@@ -24,7 +24,7 @@ All the information is stored locally and only updated when running fetch. No da
 ### Get latest prices
 - `./amz fetch`
 
-By default it fetches latest prices for all books in the monitor. Addin an "asin" will fetch only for that title. It will pring the diff and best know price, so usually this is all you need for a regular check.
+By default it fetches latest prices for all books in the monitor. Adding an "asin" will fetch only for that title. It will pring the diff and best know price, so usually this is all you need for a regular check.
 
 ### Other commands
 - `./amz diff`: To see the difference between latest and previous fetched data
@@ -32,7 +32,7 @@ By default it fetches latest prices for all books in the monitor. Addin an "asin
 - `./amz best`: Latest best fetched price
 
 ### Getting autocomplete for commands and asins
-Run `source ./autocomplete` and pressing `TAB` after ./amz will offer command autocompletion and after a command asin completetion.
+Run `source ./autocomplete` and pressing `TAB` after ./amz will offer command and asin autocompletion.
 
 ## Finding the "asin" of a book
 The book is identified by its "asin", a unique number in amazon. To find it out, go to the book page, click in the "used" link to see the list of prices and check the url. The URL should look like:
@@ -48,8 +48,7 @@ git (or my misunderstanding of it) has been an inspiration to structure this too
 - fetched prices for a title at certain time are like a "commit"
 - a "commit" is identified by a hash of its contents
 - there is a HEAD reference pointing to the latest "commit"
-- a new "commit" for a title has as parent the previous HEAD (and HEAD points to it)
+- a new "commit" for a title has as parent the previous "commit" for the title
 - everything is stored using just plain files (using `.amz` and the `.git` directory)
-- when fetching new prices, a new "commit" is created, with a reference to the previous fetch (parent commit)
 - the commands are implemented as individual scripts
 
