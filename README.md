@@ -15,7 +15,7 @@ All the information is stored locally and only updated when running fetch. No da
 - `./amz init` will create the required hidden folders to store the information
 
 ### Add/list/remove books to monitor
-- `./amz add [asin] "title"`: See below on how to find out the "asin" of your book. The title doesn't need to match the amazon name (can be an alias or shortcut). e.g `./amz add 1451673310 "Fahrenheit 451 (recommended by Alan)"`.
+- `./amz add [asin] "title"`: See below on how to find out the "asin" (ISBN) of your book. The title doesn't need to match the amazon name (can be an alias or shortcut). e.g `./amz add 1451673310 "Fahrenheit 451 (recommended by Alan)"`.
 
 - `./amz ls`: list all books being monitored
 
@@ -34,8 +34,11 @@ By default it fetches latest prices for all books in the monitor. Adding an "asi
 ### Getting autocomplete for commands and asins
 Run `source ./autocomplete` and pressing `TAB` after ./amz will offer command and asin autocompletion.
 
-## Finding the "asin" of a book
-The book is identified by its "asin", a unique number in amazon. To find it out, go to the book page, click in the "used" link to see the list of prices and check the url. The URL should look like:
+## Finding the "asin" (ISBN) of a book
+The book is identified by its "asin" (Amazon Standard Identification Numbers). Quoting [their doc](https://www.amazon.com/gp/seller/asin-upc-isbn-info.html): 
+> "For books, the ASIN is the same as the ISBN number"  
+
+To find it out directly in amazon, go to the book page, click in the "used" link to see the list of prices and check the url. The URL should look like:
 
 `https://www.amazon.com/gp/offer-listing/**ASIN**/other-stuff`
 
