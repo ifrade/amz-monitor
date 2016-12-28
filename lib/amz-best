@@ -7,11 +7,15 @@ die () {
 }
 
 VERBOSE=1
-while getopts ":s" opt; do
+DRYRUN=0
+while getopts ":sn" opt; do
   case $opt in
       s)
           VERBOSE=0
-      ;;
+          ;;
+      n)
+          DRYRUN=1
+          ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
       ;;
@@ -30,4 +34,7 @@ shift $((OPTIND-1))
 [ -e .amz/best-price/$1 ] && cat .amz/best-price/$1 && exit 0
 [[ $VERBOSE -eq 1 ]] && echo "No cache, full calculation"
 
-$DIR/amz-history -s $1 | sort -k1n -k7nr -k3Mr -k4nr | head -1 | tee .amz/best-price/$1
+BEST_PRICE=$($DIR/amz-history -s $1 | sort -k1n -k7nr -k3Mr -k4nr | head -1)
+echo $BEST_PRICE
+
+[ $DRYRUN -eq 0 ] && echo "$BEST_PRICE" > .amz/best-price/$1
