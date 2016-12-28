@@ -38,7 +38,7 @@ fi
 for SIMPLE_ASIN in $ASINS ; do
 
     echo "Fetching $SIMPLE_ASIN ("$(cat .amz/idx/$SIMPLE_ASIN)")"
-    ./lib/amzPage2json.js $SIMPLE_ASIN > .tmp-incoming.json
+    ./lib/fetch.js $SIMPLE_ASIN > .tmp-incoming.json
     [ $? -ne 0 ] && echo "Something wrong processing the amazon page. Skipping." && continue
 
     #cat x.html | ./lib/json2tab.js > x.tmp
