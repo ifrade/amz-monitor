@@ -2,17 +2,22 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 VERBOSE=1
-while getopts ":s" opt; do
+DRYRUN=0
+while getopts ":sn" opt; do
   case $opt in
       s)
           VERBOSE=0
-      ;;
+          ;;
+      n)
+          DRYRUN=1
+          ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
       ;;
   esac
-  shift
 done
+
+shift $((OPTIND-1))
 
 ASINS=
 if [ $# -gt 0 ]; then
@@ -27,14 +32,17 @@ else
     ASINS=$(ls .amz/idx)
 fi
 
+[ $DRYRUN -eq 1 ] && echo "----! Run-dry, no permanent changes done !----"
+
+
 for SIMPLE_ASIN in $ASINS ; do
-    
+
     echo "Fetching $SIMPLE_ASIN ("$(cat .amz/idx/$SIMPLE_ASIN)")"
-    ./lib/amzPage2json.js $SIMPLE_ASIN > x.json
+    ./lib/amzPage2json.js $SIMPLE_ASIN > .tmp-incoming.json
     [ $? -ne 0 ] && echo "Something wrong processing the amazon page. Skipping." && continue
 
     #cat x.html | ./lib/json2tab.js > x.tmp
-    md5=`md5sum x.json | awk '{ print $1 }'`
+    md5=`md5sum .tmp-incoming.json | awk '{ print $1 }'`
 
     if [ ! -e .amz/refs/$SIMPLE_ASIN ]; then
         previous_md5=$(cat .amz/refs/null)
@@ -44,29 +52,42 @@ for SIMPLE_ASIN in $ASINS ; do
 
     if [ $md5 != $previous_md5 ]; then
         # Save previous best price
-        $DIR/amz-best -s $SIMPLE_ASIN > .tmp-fetch-best
+        BEST_FLAGS=-s
+        [ $DRYRUN -eq 1 ] && BEST_FLAGS+=" -n"
+        $DIR/amz-best $BEST_FLAGS $SIMPLE_ASIN > .tmp-fetch-best
 
-        # Create object, set parent to current HEAD
-        cat x.json | jq --arg parent $previous_md5 --arg date "$(date)" \
+        # Create object
+        NEW_DATE=$(date)
+        cat .tmp-incoming.json | jq --arg parent $previous_md5 --arg date "$NEW_DATE" \
                         '{ entries: . , parent: $parent, date: $date }' \
-                        > .amz/objects/$md5
-
-        # Update HEAD reference
-        echo $md5 > .amz/refs/$SIMPLE_ASIN
+                        > .tmp-new-object.json
 
         # add latest best price to previously saved best price
-        NEW_BEST_PRICE=$(cat .amz/objects/$md5  | jq -r '.entries[0]' | node ./lib/jsonFormPrice.js)
-        NEW_DATE=$(cat .amz/objects/$md5  | jq -r '.date')
+        NEW_BEST_PRICE=$(cat .tmp-new-object.json | jq -r '.entries[0]' | node ./lib/jsonFormPrice.js)
         echo "$NEW_BEST_PRICE $NEW_DATE" >> .tmp-fetch-best
 
         # sort and take head to know the best and resave
-        UPDATED_BEST_PRICE=$(sort -k1n -k7nr -k3Mr -k4nr .tmp-fetch-best | head -1 | tee .amz/best-price/$SIMPLE_ASIN)
+        UPDATED_BEST_PRICE=$(sort -k1n -k7nr -k3Mr -k4nr .tmp-fetch-best | head -1)
+
+        if [ $DRYRUN -eq 0 ]; then
+            # Real thing: put the object in place, update refs and update best price
+            mv .tmp-new-object.json .amz/objects/$md5
+            echo $md5 > .amz/refs/$SIMPLE_ASIN
+
+            echo "$UPDATED_BEST_PRICE" > .amz/best-price/$SIMPLE_ASIN
+        fi
+
 
         [[ $VERBOSE -eq 1 ]] && echo "Best price seen: $UPDATED_BEST_PRICE"
-        [[ $VERBOSE -eq 1 ]] && $DIR/amz-diff $SIMPLE_ASIN
-
-        rm -f .tmp-fetch-best
+        if [ $VERBOSE -eq 1 ]; then
+            if [ $DRYRUN -eq 0 ]; then
+                $DIR/amz-diff $SIMPLE_ASIN
+            else
+                node ./lib/jsondiff .amz/objects/$previous_md5 .tmp-new-object.json
+            fi
+        fi
+        rm -f .tmp-fetch-best .tmp-new-object.json
     fi
 
-    rm -f x.html x.tmp
+    rm -f x.html x.tmp .tmp-incoming.json
 done
