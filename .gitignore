@@ -1,2 +1,4 @@
 node_modules/
 .amz/
+**/*~
+**/.tern-port
