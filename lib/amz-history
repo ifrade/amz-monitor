@@ -25,6 +25,9 @@ shift $((OPTIND-1))
 
 [[ $VERBOSE -eq 1 ]] && echo "History of best fetched prices for" $(cat .amz/idx/$1) " (asin: $1)"
 
+# The first fetch won't have a refs yet
+[ ! -e .amz/refs/$1 ] && exit 0
+
 CURRENT_HEAD=$(cat .amz/refs/$1)
 
 while [ $CURRENT_HEAD != "0" ]; do
