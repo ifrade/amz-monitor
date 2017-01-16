@@ -1,0 +1,16 @@
+#!/usr/bin/sh
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+die () {
+    echo >&2 "Error: $@"
+    exit 1
+}
+
+[ $# -lt 1 ] && die "open [asin]"
+
+[ ! -e .amz/idx/$1 ] && die "unknown asin ($1). List known asins with 'ls'."
+
+echo -n "Amazon => "
+node -e "console.log(require('./lib/amzPage2json.js').getHumanUrl('$1'))"
+echo -n "Ebay   => "
+node -e "console.log(require('./lib/ebayPage2json.js').getHumanUrl('$1'))"

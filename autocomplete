@@ -37,6 +37,9 @@ _amz_top_level ()
         fetch)
             _amz_known_idxs
             ;;
+        links)
+            _amz_known_idxs
+            ;;
         *)
             _amz_top
             
