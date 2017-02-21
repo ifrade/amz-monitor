@@ -12,6 +12,7 @@ usage() {
     echo "    init                instialize amz monitor in this directory"
     echo "    fetch               bring latest data from amazon"
     echo "    diff [asin]         check changes in that book"
+    echo "    peek [asin]         check an asin without adding it"
     echo "    links [asin]        prints the links used to retrieve the info"
     echo "    best [asin]         prints the best price ever fetch"
     echo "    history [asin]      prints the best prices fetch in chrono. order"

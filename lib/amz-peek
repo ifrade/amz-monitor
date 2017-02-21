@@ -1,0 +1,44 @@
+#!/usr/bin/sh
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+VERBOSE=1
+DRYRUN=0
+while getopts ":s" opt; do
+  case $opt in
+      s)
+          VERBOSE=0
+          ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))
+
+ASINS=
+if [ $# -gt 0 ]; then
+    for asin in "$@" ; do
+        ASINS="$ASINS $asin";
+    done
+else
+    echo "Expected at least one [asin] as parameter"
+fi
+
+for SIMPLE_ASIN in $ASINS ; do
+
+    echo "Fetching $SIMPLE_ASIN"
+    ./lib/fetch.js $SIMPLE_ASIN > .tmp-incoming.json
+    [ $? -ne 0 ] && echo "Something wrong processing the amazon page. Skipping." && continue
+
+    #cat x.html | ./lib/json2tab.js > x.tmp
+
+    # Create object
+    NEW_DATE=$(date)
+    cat .tmp-incoming.json | jq --arg parent "x" --arg date "$NEW_DATE" \
+                                '{ entries: . , parent: $parent, date: $date }' \
+                                > .tmp-new-object.json
+
+    node ./lib/jsondiff .amz/objects/0 .tmp-new-object.json
+    rm -f .tmp-new-object.json .tmp-incoming.json
+done

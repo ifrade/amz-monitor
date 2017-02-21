@@ -5,7 +5,7 @@ _amz_known_idxs ()
 }
 
 _amz_top () {
-    COMPREPLY=( $( compgen -W 'init ls add rm diff fetch best history \
+    COMPREPLY=( $( compgen -W 'init ls add rm diff fetch best history links peek \
                                help' -- $cur ) )
 }
 
@@ -42,7 +42,7 @@ _amz_top_level ()
             ;;
         *)
             _amz_top
-            
+
     esac
 
 	#local completion_func="_amz_${command//-/_}"
